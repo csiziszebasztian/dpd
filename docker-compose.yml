@@ -1,0 +1,43 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres-slq-dpd
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      PGDATA: var/lib/postgres/data
+      POSTGRES_DB: dpd
+    volumes:
+      - postgres_data:/data/postgres
+    ports:
+      - 6543:5432
+    networks:
+      - dpd-network
+    restart: unless-stopped
+
+  spring-boot-app:
+    image: dpd-spring-boot-app:latest
+    build:
+      context: ./backend
+    container_name: dpd-app
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - 8088:8088
+    networks:
+      - dpd-network
+    restart: unless-stopped
+
+  #nextjs-app:
+
+networks:
+  dpd-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
