@@ -10,8 +10,8 @@ To run this application, you need Docker and Docker Compose installed on your ma
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your/repository.git
-   cd your-project-directory
+   git clone https://github.com/csiziszebasztian/dpd.git
+   cd dpd
 2. Build and start the Docker containers:
    ```bash
    docker compose up
