@@ -36,7 +36,7 @@ A full-stack application for managing personal user data, built with Next.js (Ty
 1.  **Build and Run Containers:**
     Open a terminal in the project root directory (where `docker-compose.yml` is located) and run:
     ```bash
-    docker-compose up --build -d
+    docker compose up --build -d
     ```
     *   `--build`: Forces Docker Compose to build the images (necessary after code changes).
     *   `-d`: Runs the containers in detached mode (in the background).
@@ -47,14 +47,14 @@ A full-stack application for managing personal user data, built with Next.js (Ty
 
 *   **Frontend:** Open your web browser and navigate to [http://localhost:3000](http://localhost:3000)
 *   **Backend API Base:** The API is available at `http://localhost:8088/api/v1`
-*   **Backend Swagger UI (API Docs):** Navigate to [http://localhost:8088/swagger-ui.html](http://localhost:8088/swagger-ui.html) to explore the REST API endpoints.
+*   **Backend Swagger UI (API Docs):** Navigate to [http://localhost:8088/api/v1/swagger-ui.html](http://localhost:8088/swagger-ui.html) to explore the REST API endpoints.
 
 ## Stopping the Application
 
 To stop the running containers, execute the following command in the project root directory:
 ```bash
-docker-compose down
+docker compose down
 ```
 To stop and remove the volumes (including database data), use:
 ```bash
-docker-compose down -v
+docker compose down -v
