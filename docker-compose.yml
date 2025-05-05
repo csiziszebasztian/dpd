@@ -32,7 +32,31 @@ services:
       - dpd-network
     restart: unless-stopped
 
-  #nextjs-app:
+  nextjs-app:
+    container_name: dpd-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # Explicitly specifying Dockerfile name
+      args:
+        - NEXT_PUBLIC_API_URL=http://spring-boot-app:8088/api/v1
+    ports:
+      - "3000:3000"
+    networks:
+      - dpd-network
+    environment:
+      # Pass the backend URL to the Next.js app
+      # Use the service name 'spring-boot-app' for inter-container communication
+      - NEXT_PUBLIC_API_URL=http://spring-boot-app:8088/api/v1
+      # Ensure hot-reloading works correctly in development (if needed)
+      # WATCHPACK_POLLING=true # Uncomment if hot-reload issues arise in Docker
+    depends_on:
+      - spring-boot-app # Ensure backend is ready before frontend starts (basic check)
+    restart: unless-stopped
+    # Add volumes for development if needed for hot-reloading node_modules/source code
+    # volumes:
+    #   - ./frontend:/app
+    #   - /app/node_modules # Prevent host node_modules from overwriting container's
+    #   - /app/.next
 
 networks:
   dpd-network:

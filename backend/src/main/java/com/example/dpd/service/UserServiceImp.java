@@ -96,7 +96,28 @@ public class UserServiceImp implements UserService {
     }
 
     public void deleteUser(UUID id) {
-        userRepository.deleteById(id);
+        // GDPR-compliant deletion (Depersonalization)
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setName("[DELETED]"); // Or null
+            user.setEmail("[DELETED@" + user.getId().toString() + "]"); // Ensure uniqueness if email has constraint
+            user.setDateOfBirth(null);
+            user.setPlaceOfBirth("[DELETED]"); // Or null
+            user.setMotherMaidenName("[DELETED]"); // Or null
+            user.setTaj(null); // Assuming TAJ can be nullable
+            user.setTaxId(null); // Assuming Tax ID can be nullable
+
+            // Remove associated personal data collections
+            user.getAddresses().clear();
+            user.getPhoneNumbers().clear();
+            // Note: CascadeType.ALL on User entity should handle deletion of orphaned Address/PhoneNumber rows
+
+            userRepository.save(user);
+        } else {
+            // Optionally log or ignore if user not found, or re-throw
+             throw new ResourceNotFoundException("User not found for depersonalization with id: " + id);
+        }
     }
 
     public List<UserDTO> getAllUsers() {
@@ -110,25 +131,7 @@ public class UserServiceImp implements UserService {
                 .map(this::convertToDTO);
     }
 
-    public void gtpr(UUID id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-
-            User user = userOptional.get();
-            user.setName(null);
-            user.setDateOfBirth(null);
-            user.setPlaceOfBirth(null);
-            user.setMotherMaidenName(null);
-            user.setTaj(null);
-            user.setTaxId(null);
-            user.setAddresses(new HashSet<>());
-            user.setPhoneNumbers(new HashSet<>());
-
-            userRepository.save(user);
-        } else {
-            throw new ResourceNotFoundException("User not found");
-        }
-    }
+    // gtpr method removed, logic moved to deleteUser
 
     private UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
@@ -156,15 +159,29 @@ public class UserServiceImp implements UserService {
 
     private Address convertToAddress(AddressDTO addressDTO) {
         Address address = new Address();
-        address.setId(UUID.randomUUID());
-        address.setAddress(addressDTO.getAddress());
+        // If addressDTO.getId() is null, it's a new address, generate ID.
+        // If addressDTO.getId() is not null, we should ideally fetch the existing Address
+        // and update it, or rely on JPA merge behavior. For simplicity in create/update
+        // where we clear the collection, generating a new ID might be acceptable for now,
+        // but this assumes addresses are fully replaced on update.
+        address.setId(addressDTO.getId() != null ? addressDTO.getId() : UUID.randomUUID());
+        address.setPostalCode(addressDTO.getPostalCode());
+        address.setCity(addressDTO.getCity());
+        address.setStreet(addressDTO.getStreet());
+        address.setHouseNumber(addressDTO.getHouseNumber());
+        address.setOtherInfo(addressDTO.getOtherInfo());
+        // The user link is set in the calling method (createUser/updateUser)
         return address;
     }
 
     private AddressDTO convertToAddressDTO(Address address) {
         AddressDTO addressDTO = new AddressDTO();
         addressDTO.setId(address.getId());
-        addressDTO.setAddress(address.getAddress());
+        addressDTO.setPostalCode(address.getPostalCode());
+        addressDTO.setCity(address.getCity());
+        addressDTO.setStreet(address.getStreet());
+        addressDTO.setHouseNumber(address.getHouseNumber());
+        addressDTO.setOtherInfo(address.getOtherInfo());
         return addressDTO;
     }
 

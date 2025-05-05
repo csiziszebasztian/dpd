@@ -14,5 +14,5 @@ public interface UserService {
     void deleteUser(UUID id);
     List<UserDTO> getAllUsers();
     Optional<UserDTO> getUserById(UUID id);
-    void gtpr(UUID id);
+    // gtpr method removed
 }

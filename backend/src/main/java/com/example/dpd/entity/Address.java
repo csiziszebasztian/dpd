@@ -25,8 +25,23 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Size(max = 10) // Example size, adjust if needed
+    @Column(name = "postal_code", length = 10)
+    private String postalCode;
+
     @Size(max = 255)
-    @Column(name = "address")
-    private String address;
+    @Column(name = "city")
+    private String city;
+
+    @Size(max = 255)
+    @Column(name = "street")
+    private String street;
+
+    @Size(max = 50) // Example size, adjust if needed
+    @Column(name = "house_number", length = 50)
+    private String houseNumber;
+
+    @Column(name = "other_info")
+    private String otherInfo; // No size limit, defaults usually suffice for text/varchar
 
 }

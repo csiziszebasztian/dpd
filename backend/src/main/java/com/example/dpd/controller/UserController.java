@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -50,13 +50,9 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         Optional<UserDTO> userDTO = userService.getUserById(id);
         return userDTO.map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
-    @PostMapping("/gtpr/{id}")
-    public ResponseEntity<Void> gtpr(@PathVariable UUID id) {
-        userService.gtpr(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
+    // gtpr endpoint removed
 
 }
